@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Role {
+  id        Int    @id @default(autoincrement())
+  role_name String @unique
+  user      User[]
+}
+
+model Token {
+  id            Int       @id @default(autoincrement())
+  created_at    DateTime  @default(now())
+  refresh_token String    @unique
+  expire_in     DateTime?
+  user_id       Int
+  user          User      @relation(fields: [user_id], references: id)
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String?
+  email      String   @unique
+  password   String
+  created_at DateTime @default(now())
+  role_id    Int
+  role       Role     @relation(fields: [role_id], references: [id])
+  token      Token[]
+  order      Order[]
+}
+
+model Category {
+  id   Int       @id @default(autoincrement())
+  name String
+  desc String
+  pdt  Product[]
+}
+
+model Product {
+  id          Int               @id @default(autoincrement())
+  name        String
+  desc        String
+  imgUrl      String?
+  price       Decimal
+  category_id Int
+  category    Category          @relation(fields: [category_id], references: [id])
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt()
+  pdt_varient ProductVarients[]
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  order_date   DateTime
+  status       Boolean     @default(false)
+  shipping_add String
+  billing_add  String
+  total_amount Decimal
+  user_id      Int
+  user         User        @relation(fields: [user_id], references: [id])
+  orderItem    OrderItem[]
+}
+
+model ProductVarients {
+  id             Int         @id @default(autoincrement())
+  slug           String
+  varient_name   String
+  price          Decimal
+  imgUrl         String?
+  stock_quantity Int
+  created_at     DateTime    @default(now())
+  pdt_id         Int
+  pdt            Product     @relation(fields: [pdt_id], references: [id])
+  orderItem      OrderItem[]
+}
+
+model OrderItem {
+  id             Int             @id @default(autoincrement())
+  order_id       Int
+  order          Order           @relation(fields: [order_id], references: [id])
+  pdt_varient_id Int
+  pdt_varient    ProductVarients @relation(fields: [pdt_varient_id], references: [id])
+  quantity       Int
+  varient_price  Decimal
+}
