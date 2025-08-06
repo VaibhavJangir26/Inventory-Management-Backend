@@ -70,7 +70,7 @@ Welcome to **InventoryHub** — a secure and scalable inventory management backe
 
 ```bash
 # Clone the project
-git clone https://github.com/yourusername/inventory-backend.git
+git clone https://github.com/yourusername/Inventory-Management-Backend.git
 cd inventory-backend
 
 # Install dependencies
